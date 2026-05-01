@@ -12,6 +12,7 @@ import { SettingsPage } from './pages/SettingsPage'
 import { AuthPage } from './pages/AuthPage'
 import { BettingPage } from './pages/BettingPage'
 import { ProfilesPage } from './pages/ProfilesPage'
+import { CoversPage } from './pages/CoversPage'
 import { useScanner } from './hooks/useScanner'
 import type { TabType } from './types'
 
@@ -70,6 +71,8 @@ function App() {
         return <BettingPage />
       case 'profiles':
         return <ProfilesPage />
+      case 'covers':
+        return <CoversPage />
       default:
         return <Dashboard metrics={metrics} surebets={surebets} bookmakers={bookmakers} valueBets={valueBets} generosityIndices={generosityIndices} executionOverview={executionOverview} parserCoverage={parserCoverage} parserHealth={parserHealth} />
     }

@@ -3,6 +3,7 @@ pub mod corridor;
 pub mod corridors;
 pub mod cover;
 pub mod event_pool;
+pub mod filters;
 pub mod freebet;
 pub mod generosity;
 pub mod middle;
@@ -10,6 +11,7 @@ pub mod mirror;
 pub mod momentum;
 pub mod normalizer;
 pub mod odds_errors;
+pub mod scanner_config;
 pub mod value;
 pub mod verifier;
 

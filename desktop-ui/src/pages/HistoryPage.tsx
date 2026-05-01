@@ -303,18 +303,26 @@ export function HistoryPage({ surebets, corridors, expressForks, valueBets, exec
     >
       <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
         <div>
-          <h2 className="text-2xl font-bold">Activity / History</h2>
+          <h2 className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>История и статистика</h2>
           <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>
-            Read-only timeline over surebets, corridors, express, value bets and execution ledger snapshots.
+            Объединённый таймлайн вилок, коридоров, экспрессов, value-ставок и исполнений
           </p>
         </div>
 
-        <div className="flex flex-wrap gap-3 text-xs">
-          <div className="rounded-xl px-3 py-2" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-color)' }}>
-            {filteredEntries.length} visible entries
-          </div>
-          <div className="rounded-xl px-3 py-2" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-color)' }}>
-            Selection persists locally
+        <div className="flex flex-wrap gap-2 text-xs">
+          {(['day', 'week', 'month', 'all'] as const).map(p => (
+            <button key={p}
+              className="rounded-xl px-3 py-2 text-xs font-medium"
+              style={{
+                background: 'var(--bg-card)', border: '1px solid var(--border-color)',
+                color: 'var(--text-primary)', cursor: 'pointer',
+              }}
+            >
+              {p === 'day' ? 'День' : p === 'week' ? 'Неделя' : p === 'month' ? 'Месяц' : 'Всё время'}
+            </button>
+          ))}
+          <div className="rounded-xl px-3 py-2" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-color)', color: 'var(--text-secondary)' }}>
+            {filteredEntries.length} записей
           </div>
         </div>
       </div>

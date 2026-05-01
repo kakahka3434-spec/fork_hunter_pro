@@ -22,10 +22,25 @@
     --text-secondary: #8b949e;
     --text-muted: #484f58;
     
+    --accent-orange: #f0883e;
+    
+    --profit-super: #00ff88;
+    --profit-high: #3fb950;
+    --profit-normal: #84cc16;
+    --profit-low: #eab308;
+    --profit-negative: #f85149;
+    
     --gradient-primary: linear-gradient(135deg, #58a6ff 0%, #bc8cff 100%);
     --gradient-success: linear-gradient(135deg, #3fb950 0%, #39d2c0 100%);
     --gradient-danger: linear-gradient(135deg, #f85149 0%, #f0883e 100%);
     --gradient-card: linear-gradient(180deg, rgba(22,27,34,0.8) 0%, rgba(13,17,23,0.9) 100%);
+    
+    --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
+    --font-sans: 'Inter', 'Segoe UI', system-ui, sans-serif;
+    --border-radius: 8px;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.4);
+    --shadow-lg: 0 10px 15px rgba(0,0,0,0.5);
   }
 
   * {
@@ -378,4 +393,78 @@
   background: var(--gradient-primary);
   z-index: -1;
   opacity: 0.5;
+}
+
+/* Fork Card Styles */
+.fork-card {
+  transition: all 0.2s ease;
+}
+
+.fork-card:hover {
+  transform: translateX(4px);
+}
+
+.fork-card.super-profit {
+  border-left-color: var(--profit-super) !important;
+}
+
+.fork-card.high-profit {
+  border-left-color: var(--profit-high) !important;
+}
+
+.fork-card.normal-profit {
+  border-left-color: var(--profit-normal) !important;
+}
+
+.fork-card.low-profit {
+  border-left-color: var(--profit-low) !important;
+}
+
+.fork-card.new::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: inherit;
+  animation: slideIn 0.3s ease-out;
+  pointer-events: none;
+}
+
+/* Sidebar with border-left active indicator */
+.sidebar-item {
+  border-left: 3px solid transparent;
+  transition: all 0.2s;
+}
+
+.sidebar-item.active {
+  border-left-color: var(--accent-blue);
+}
+
+/* Live indicator pulse */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes slideIn {
+  from { transform: translateX(-20px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+/* Status bar */
+.status-bar {
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border-color);
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* Top bar logo gradient */
+.logo-gradient {
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
