@@ -4,6 +4,7 @@ pub mod corridors;
 pub mod cover;
 pub mod event_pool;
 pub mod filters;
+pub mod fork_finder;
 pub mod freebet;
 pub mod generosity;
 pub mod middle;

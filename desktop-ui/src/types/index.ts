@@ -750,7 +750,7 @@ export type ExpressFork = BackendExpressFork
 export type ExpressForkLeg = BackendExpressForkLeg
 export type ExpressForkEvent = BackendExpressForkEvent
 
-export type TabType = 'dashboard' | 'surebets' | 'corridors' | 'express' | 'operator' | 'accounts' | 'history' | 'settings' | 'auth' | 'betting' | 'profiles' | 'covers'
+export type TabType = 'dashboard' | 'scanner' | 'surebets' | 'corridors' | 'express' | 'operator' | 'accounts' | 'history' | 'settings' | 'auth' | 'betting' | 'profiles' | 'covers'
 
 // ── Auth module types ──
 

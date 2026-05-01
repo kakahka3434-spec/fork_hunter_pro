@@ -16,7 +16,8 @@ interface SidebarProps {
 
 const tabs: { id: TabType; label: string; shortcut: string; icon: any; badge?: { text: string; color: string } }[] = [
   { id: 'dashboard', label: 'Обзор', shortcut: '⌘1', icon: LayoutDashboard },
-  { id: 'surebets', label: 'Вилки', shortcut: '⌘2', icon: Zap, badge: { text: 'LIVE', color: 'success' } },
+  { id: 'scanner', label: 'Сканер', shortcut: '', icon: Radar, badge: { text: 'LIVE', color: 'success' } },
+  { id: 'surebets', label: 'Вилки', shortcut: '⌘2', icon: Zap },
   { id: 'corridors', label: 'Коридоры', shortcut: '⌘3', icon: GitBranch },
   { id: 'express', label: 'Экспрессы', shortcut: '⌘4', icon: Layers },
   { id: 'operator', label: 'Execution', shortcut: '⌘5', icon: Radar },
