@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion'
 import { 
   LayoutDashboard, Zap, GitBranch, Layers, History, Settings, Radar, Landmark,
-  ChevronLeft, ChevronRight, Circle 
+  ChevronLeft, ChevronRight, Circle, Shield, Target, User
 } from 'lucide-react'
 import type { TabType } from '../types'
 
@@ -21,6 +21,9 @@ const tabs: { id: TabType; label: string; shortcut: string; icon: any; badge?: {
   { id: 'express', label: 'Экспрессы', shortcut: '⌘4', icon: Layers },
   { id: 'operator', label: 'Execution', shortcut: '⌘5', icon: Radar },
   { id: 'accounts', label: 'Accounts', shortcut: '⌘6', icon: Landmark },
+  { id: 'auth', label: 'Авторизация', shortcut: '', icon: Shield },
+  { id: 'betting', label: 'Ставки', shortcut: '', icon: Target },
+  { id: 'profiles', label: 'Профили', shortcut: '', icon: User },
   { id: 'history', label: 'История', shortcut: '⌘7', icon: History },
   { id: 'settings', label: 'Настройки', shortcut: '⌘8', icon: Settings },
 ]

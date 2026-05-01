@@ -9,6 +9,9 @@ import { OperatorPage } from './pages/OperatorPage'
 import { AccountsPage } from './pages/AccountsPage'
 import { HistoryPage } from './pages/HistoryPage'
 import { SettingsPage } from './pages/SettingsPage'
+import { AuthPage } from './pages/AuthPage'
+import { BettingPage } from './pages/BettingPage'
+import { ProfilesPage } from './pages/ProfilesPage'
 import { useScanner } from './hooks/useScanner'
 import type { TabType } from './types'
 
@@ -61,6 +64,12 @@ function App() {
         return <HistoryPage surebets={surebets} corridors={corridors} expressForks={expressForks} valueBets={valueBets} executionLedger={executionLedger} />
       case 'settings':
         return <SettingsPage />
+      case 'auth':
+        return <AuthPage />
+      case 'betting':
+        return <BettingPage />
+      case 'profiles':
+        return <ProfilesPage />
       default:
         return <Dashboard metrics={metrics} surebets={surebets} bookmakers={bookmakers} valueBets={valueBets} generosityIndices={generosityIndices} executionOverview={executionOverview} parserCoverage={parserCoverage} parserHealth={parserHealth} />
     }

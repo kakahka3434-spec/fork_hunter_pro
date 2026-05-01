@@ -1,5 +1,7 @@
 pub mod calculator;
 pub mod corridor;
+pub mod corridors;
+pub mod cover;
 pub mod event_pool;
 pub mod freebet;
 pub mod generosity;

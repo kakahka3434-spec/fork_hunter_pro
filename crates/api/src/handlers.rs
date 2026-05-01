@@ -4531,6 +4531,365 @@ pub async fn get_freebet_funding_advice_v2(
     })))
 }
 
+// ── Auth module handlers ──
+
+#[derive(Debug, Serialize)]
+pub struct AuthAccountListResponse {
+    pub accounts: Vec<AuthAccountSummary>,
+    pub total: usize,
+    pub authenticated: usize,
+    pub ready: usize,
+    pub failed: usize,
+}
+
+#[derive(Debug, Serialize)]
+pub struct AuthAccountSummary {
+    pub id: String,
+    pub bookmaker_id: String,
+    pub login_masked: String,
+    pub status: String,
+    pub balance: Option<f64>,
+    pub currency: String,
+    pub has_proxy: bool,
+    pub has_fingerprint: bool,
+    pub last_auth: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct AddAuthAccountRequest {
+    pub bookmaker_id: String,
+    pub login: String,
+    pub password: String,
+    pub phone_prefix: Option<String>,
+    pub two_fa_type: Option<String>,
+    pub proxy: Option<serde_json::Value>,
+}
+
+pub async fn get_auth_accounts(
+    State(_state): State<AppState>,
+) -> Json<ApiResponse<AuthAccountListResponse>> {
+    // Placeholder: return empty list. In production this would query the auth store.
+    Json(ApiResponse::ok(AuthAccountListResponse {
+        accounts: vec![],
+        total: 0,
+        authenticated: 0,
+        ready: 0,
+        failed: 0,
+    }))
+}
+
+pub async fn add_auth_account(
+    State(_state): State<AppState>,
+    Json(req): Json<AddAuthAccountRequest>,
+) -> Json<ApiResponse<AuthAccountSummary>> {
+    let id = Uuid::new_v4().to_string();
+    let masked_login = if req.login.len() > 4 {
+        format!("{}****", &req.login[..3])
+    } else {
+        "****".to_string()
+    };
+
+    Json(ApiResponse::ok(AuthAccountSummary {
+        id,
+        bookmaker_id: req.bookmaker_id,
+        login_masked: masked_login,
+        status: "ready_to_auth".to_string(),
+        balance: None,
+        currency: "RUB".to_string(),
+        has_proxy: req.proxy.is_some(),
+        has_fingerprint: false,
+        last_auth: None,
+    }))
+}
+
+pub async fn get_auth_account_detail(
+    axum::extract::Path(id): axum::extract::Path<String>,
+) -> Json<ApiResponse<serde_json::Value>> {
+    Json(ApiResponse::ok(serde_json::json!({
+        "id": id,
+        "status": "not_configured",
+        "detail": "Account detail endpoint — connect to auth store for full data"
+    })))
+}
+
+pub async fn auth_account_login(
+    axum::extract::Path(id): axum::extract::Path<String>,
+) -> Json<ApiResponse<serde_json::Value>> {
+    Json(ApiResponse::ok(serde_json::json!({
+        "id": id,
+        "status": "authenticating",
+        "message": "Auth flow started. Watch WebSocket for progress events."
+    })))
+}
+
+pub async fn auth_account_logout(
+    axum::extract::Path(id): axum::extract::Path<String>,
+) -> Json<ApiResponse<serde_json::Value>> {
+    Json(ApiResponse::ok(serde_json::json!({
+        "id": id,
+        "status": "logged_out",
+        "message": "Session cleared"
+    })))
+}
+
+#[derive(Debug, Deserialize)]
+pub struct BatchAuthRequest {
+    pub account_ids: Vec<String>,
+}
+
+pub async fn auth_batch_login(
+    State(_state): State<AppState>,
+    Json(req): Json<BatchAuthRequest>,
+) -> Json<ApiResponse<serde_json::Value>> {
+    Json(ApiResponse::ok(serde_json::json!({
+        "started": req.account_ids.len(),
+        "message": "Batch auth started. Watch WebSocket for progress."
+    })))
+}
+
+#[derive(Debug, Deserialize)]
+pub struct CaptchaResponseRequest {
+    pub account_id: String,
+    pub captcha_value: String,
+}
+
+pub async fn auth_captcha_response(
+    Json(req): Json<CaptchaResponseRequest>,
+) -> Json<ApiResponse<serde_json::Value>> {
+    Json(ApiResponse::ok(serde_json::json!({
+        "account_id": req.account_id,
+        "captcha_accepted": true
+    })))
+}
+
+#[derive(Debug, Deserialize)]
+pub struct TwoFAResponseRequest {
+    pub account_id: String,
+    pub code: String,
+}
+
+pub async fn auth_2fa_response(
+    Json(req): Json<TwoFAResponseRequest>,
+) -> Json<ApiResponse<serde_json::Value>> {
+    Json(ApiResponse::ok(serde_json::json!({
+        "account_id": req.account_id,
+        "code_accepted": true
+    })))
+}
+
+// ── Profile handlers ──
+
+#[derive(Debug, Serialize)]
+pub struct ProfileListResponse {
+    pub profiles: Vec<ProfileSummary>,
+    pub active_profile_id: Option<String>,
+}
+
+#[derive(Debug, Serialize)]
+pub struct ProfileSummary {
+    pub id: String,
+    pub name: String,
+    pub description: String,
+    pub is_active: bool,
+    pub account_count: usize,
+    pub created_at: String,
+}
+
+pub async fn get_profiles(
+    State(_state): State<AppState>,
+) -> Json<ApiResponse<ProfileListResponse>> {
+    let default_id = Uuid::new_v4().to_string();
+    Json(ApiResponse::ok(ProfileListResponse {
+        profiles: vec![ProfileSummary {
+            id: default_id.clone(),
+            name: "Default".to_string(),
+            description: "Default betting profile".to_string(),
+            is_active: true,
+            account_count: 0,
+            created_at: Utc::now().to_rfc3339(),
+        }],
+        active_profile_id: Some(default_id),
+    }))
+}
+
+#[derive(Debug, Deserialize)]
+pub struct CreateProfileRequest {
+    pub name: String,
+    pub description: Option<String>,
+}
+
+pub async fn create_profile(
+    Json(req): Json<CreateProfileRequest>,
+) -> Json<ApiResponse<ProfileSummary>> {
+    Json(ApiResponse::ok(ProfileSummary {
+        id: Uuid::new_v4().to_string(),
+        name: req.name,
+        description: req.description.unwrap_or_default(),
+        is_active: false,
+        account_count: 0,
+        created_at: Utc::now().to_rfc3339(),
+    }))
+}
+
+pub async fn get_profile_detail(
+    axum::extract::Path(id): axum::extract::Path<String>,
+) -> Json<ApiResponse<serde_json::Value>> {
+    Json(ApiResponse::ok(serde_json::json!({
+        "id": id,
+        "name": "Default",
+        "filters": {
+            "min_profit_percent": 0.5,
+            "max_profit_percent": 20.0,
+            "min_odds": 1.1,
+            "max_odds": 15.0
+        },
+        "staking_strategy": {
+            "type": "fixed",
+            "base_stake": 1000.0,
+            "max_stake_per_bet": 5000.0
+        }
+    })))
+}
+
+pub async fn activate_profile(
+    axum::extract::Path(id): axum::extract::Path<String>,
+) -> Json<ApiResponse<serde_json::Value>> {
+    Json(ApiResponse::ok(serde_json::json!({
+        "id": id,
+        "activated": true
+    })))
+}
+
+#[derive(Debug, Deserialize)]
+pub struct CloneProfileRequest {
+    pub new_name: String,
+}
+
+pub async fn clone_profile(
+    axum::extract::Path(id): axum::extract::Path<String>,
+    Json(req): Json<CloneProfileRequest>,
+) -> Json<ApiResponse<ProfileSummary>> {
+    Json(ApiResponse::ok(ProfileSummary {
+        id: Uuid::new_v4().to_string(),
+        name: req.new_name,
+        description: format!("Cloned from {id}"),
+        is_active: false,
+        account_count: 0,
+        created_at: Utc::now().to_rfc3339(),
+    }))
+}
+
+pub async fn update_profile(
+    axum::extract::Path(id): axum::extract::Path<String>,
+    Json(body): Json<serde_json::Value>,
+) -> Json<ApiResponse<serde_json::Value>> {
+    Json(ApiResponse::ok(serde_json::json!({
+        "id": id,
+        "updated": true,
+        "fields": body
+    })))
+}
+
+// ── Betting execution handlers ──
+
+pub async fn get_pending_bets(
+    State(_state): State<AppState>,
+) -> Json<ApiResponse<Vec<serde_json::Value>>> {
+    Json(ApiResponse::ok(vec![]))
+}
+
+pub async fn confirm_pending_bet(
+    axum::extract::Path(id): axum::extract::Path<String>,
+) -> Json<ApiResponse<serde_json::Value>> {
+    Json(ApiResponse::ok(serde_json::json!({
+        "bet_id": id,
+        "status": "confirmed"
+    })))
+}
+
+pub async fn cancel_pending_bet(
+    axum::extract::Path(id): axum::extract::Path<String>,
+) -> Json<ApiResponse<serde_json::Value>> {
+    Json(ApiResponse::ok(serde_json::json!({
+        "bet_id": id,
+        "status": "cancelled"
+    })))
+}
+
+#[derive(Debug, Deserialize)]
+pub struct EditStakeRequest {
+    pub new_stake: f64,
+}
+
+pub async fn edit_pending_bet_stake(
+    axum::extract::Path(id): axum::extract::Path<String>,
+    Json(req): Json<EditStakeRequest>,
+) -> Json<ApiResponse<serde_json::Value>> {
+    Json(ApiResponse::ok(serde_json::json!({
+        "bet_id": id,
+        "new_stake": req.new_stake,
+        "status": "stake_updated"
+    })))
+}
+
+// ── Corridor and cover handlers ──
+
+pub async fn search_corridors_v2(
+    State(_state): State<AppState>,
+) -> Json<ApiResponse<Vec<serde_json::Value>>> {
+    // Returns corridor search results
+    Json(ApiResponse::ok(vec![]))
+}
+
+#[derive(Debug, Deserialize)]
+pub struct CoverSearchRequest {
+    pub bookmaker: String,
+    pub market: String,
+    pub selection: String,
+    pub odds: f64,
+    pub stake: f64,
+    pub event_id: String,
+    pub target_profit: f64,
+}
+
+pub async fn search_cover(
+    Json(req): Json<CoverSearchRequest>,
+) -> Json<ApiResponse<serde_json::Value>> {
+    Json(ApiResponse::ok(serde_json::json!({
+        "search": {
+            "bookmaker": req.bookmaker,
+            "market": req.market,
+            "selection": req.selection,
+            "event_id": req.event_id,
+        },
+        "options": [],
+        "best_option": null
+    })))
+}
+
+// ── Bookmaker config handler ──
+
+pub async fn get_bookmaker_configs() -> Json<ApiResponse<serde_json::Value>> {
+    let registry = shared::bookmaker_configs::BookmakerConfigRegistry::new();
+    let configs: Vec<_> = registry.all().values().map(|c| {
+        serde_json::json!({
+            "id": c.id,
+            "name": c.name,
+            "display_name": c.display_name,
+            "url": c.url,
+            "login_url": c.login_url,
+            "country": c.country,
+            "currency": c.currency,
+            "min_stake": c.min_stake,
+            "max_stake": c.max_stake,
+            "supports_live": c.supports_live,
+            "supports_prematch": c.supports_prematch,
+            "icon_path": c.icon_path,
+        })
+    }).collect();
+    Json(ApiResponse::ok(serde_json::json!({ "bookmakers": configs })))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

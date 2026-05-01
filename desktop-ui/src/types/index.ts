@@ -713,13 +713,6 @@ export interface FreebetLifecycleSummary {
   generated_at: string
 }
 
-export interface CorridorLeg {
-  bookmaker: string
-  selection: string
-  odds: number
-  line: number
-}
-
 export interface BackendExpressFork {
   id: string
   profit_percent: number
@@ -757,4 +750,254 @@ export type ExpressFork = BackendExpressFork
 export type ExpressForkLeg = BackendExpressForkLeg
 export type ExpressForkEvent = BackendExpressForkEvent
 
-export type TabType = 'dashboard' | 'surebets' | 'corridors' | 'express' | 'operator' | 'accounts' | 'history' | 'settings'
+export type TabType = 'dashboard' | 'surebets' | 'corridors' | 'express' | 'operator' | 'accounts' | 'history' | 'settings' | 'auth' | 'betting' | 'profiles'
+
+// ── Auth module types ──
+
+export type AuthStatus =
+  | 'not_configured'
+  | 'ready_to_auth'
+  | 'authenticating'
+  | 'awaiting_captcha'
+  | 'awaiting_2fa'
+  | 'authenticated'
+  | 'session_expired'
+  | 'auth_failed'
+  | 'blocked'
+
+export type TwoFAType = 'none' | 'sms' | 'totp' | 'email'
+
+export interface ProxyConfig {
+  host: string
+  port: number
+  username?: string
+  password?: string
+  protocol: 'http' | 'https' | 'socks5'
+  country: string
+}
+
+export interface BrowserFingerprint {
+  canvas_hash: string
+  webgl_hash: string
+  webgl_vendor: string
+  webgl_renderer: string
+  fonts: string[]
+  screen_resolution: [number, number]
+  color_depth: number
+  device_memory: number
+  hardware_concurrency: number
+  do_not_track: boolean
+  web_rtc_enabled: boolean
+  web_gl_enabled: boolean
+}
+
+export interface AuthAccountSummary {
+  id: string
+  bookmaker_id: string
+  login_masked: string
+  status: AuthStatus
+  balance: number | null
+  currency: string
+  has_proxy: boolean
+  has_fingerprint: boolean
+  last_auth: string | null
+}
+
+export interface AuthAccountListResponse {
+  accounts: AuthAccountSummary[]
+  total: number
+  authenticated: number
+  ready: number
+  failed: number
+}
+
+export interface AuthOperatorEvent {
+  type: 'captcha_required' | 'two_fa_required' | 'auth_progress' | 'auth_completed'
+  account_id: string
+  bookmaker: string
+  screenshot_base64?: string
+  hint?: string
+  method?: 'sms' | 'totp' | 'email'
+  phone_mask?: string
+  step?: string
+  detail?: string
+  success?: boolean
+  balance?: number
+  error?: string
+}
+
+// ── Execution module types ──
+
+export type BetExecutionMode = 'auto' | 'semi_auto' | 'manual'
+
+export type BetPlacementStatus =
+  | 'pending'
+  | 'coupon_filled'
+  | 'awaiting_confirmation'
+  | 'confirmed'
+  | 'placed'
+  | 'rejected'
+  | 'cancelled'
+  | 'timeout'
+  | 'error'
+
+export type BetUrgency = 'low' | 'medium' | 'high' | 'critical'
+
+export interface PendingBet {
+  id: string
+  fork_id: string
+  bookmaker: string
+  event_name: string
+  sport: string
+  league: string
+  home_team: string
+  away_team: string
+  market: string
+  selection: string
+  requested_odds: number
+  actual_odds: number
+  stake: number
+  time_left_secs: number
+  coupon_screenshot_base64?: string
+  urgency: BetUrgency
+  created_at: string
+}
+
+export interface BetPlacementResult {
+  bet_id: string
+  status: BetPlacementStatus
+  bet_slip_id?: string
+  actual_odds?: number
+  actual_stake?: number
+  placed_at?: string
+  error?: string
+  execution_time_ms: number
+}
+
+// ── Profile types ──
+
+export type StakingStrategyType = 'fixed' | 'proportional' | 'kelly' | 'custom'
+
+export interface ProfileFilters {
+  sports: string[]
+  leagues: string[]
+  excluded_leagues: string[]
+  bookmakers: string[]
+  min_profit_percent: number
+  max_profit_percent: number
+  min_odds: number
+  max_odds: number
+  markets: string[]
+  excluded_markets: string[]
+  live_only: boolean
+  prematch_only: boolean
+  min_time_to_start_minutes?: number
+  max_time_to_start_minutes?: number
+}
+
+export interface StakingStrategy {
+  strategy_type: StakingStrategyType
+  base_stake: number
+  max_stake_per_bet: number
+  max_daily_stake: number
+  max_daily_bets: number
+  kelly_fraction?: number
+  bankroll_percent?: number
+}
+
+export interface ProfileSettings {
+  auto_accept_odds_drop_percent: number
+  notification_on_fork: boolean
+  notification_on_bet: boolean
+  notification_sound: boolean
+  auto_refresh_interval_secs: number
+}
+
+export interface BettingProfile {
+  id: string
+  name: string
+  description: string
+  is_active: boolean
+  accounts: ProfileAccount[]
+  filters: ProfileFilters
+  staking_strategy: StakingStrategy
+  settings: ProfileSettings
+  created_at: string
+  updated_at: string
+}
+
+export interface ProfileAccount {
+  account_id: string
+  bookmaker_id: string
+  enabled: boolean
+  max_stake?: number
+  priority: number
+}
+
+export interface ProfileListResponse {
+  profiles: BettingProfile[]
+  active_profile_id: string | null
+}
+
+// ── Corridor types ──
+
+export interface CorridorLeg {
+  bookmaker: string
+  bookmaker_id?: string
+  account_id?: string
+  market?: string
+  selection: string
+  odds: number
+  stake?: number
+  line: number
+}
+
+export interface Corridor {
+  id: string
+  event_id: string
+  event_name: string
+  sport: string
+  league: string
+  legs: CorridorLeg[]
+  total_stake: number
+  max_profit: number
+  min_profit: number
+  hit_probability: number
+  profit_if_hit: number
+  loss_if_miss: number
+  detected_at: string
+}
+
+// ── Cover types ──
+
+export interface CoverOption {
+  bookmaker: string
+  market: string
+  selection: string
+  odds: number
+  required_stake: number
+  expected_profit: number
+  execution_time_estimate_ms: number
+}
+
+export interface CoverSearchResult {
+  options: CoverOption[]
+  best_option: CoverOption | null
+}
+
+// ── Bookmaker config types ──
+
+export interface BookmakerConfig {
+  id: string
+  name: string
+  display_name: string
+  url: string
+  login_url: string
+  country: string
+  currency: string
+  min_stake: number
+  max_stake: number
+  supports_live: boolean
+  supports_prematch: boolean
+  icon_path: string
+}

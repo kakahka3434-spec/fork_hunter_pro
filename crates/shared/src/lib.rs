@@ -1,3 +1,4 @@
+pub mod bookmaker_configs;
 pub mod config;
 pub mod errors;
 pub mod events;
