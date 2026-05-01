@@ -9,6 +9,12 @@ import { OperatorPage } from './pages/OperatorPage'
 import { AccountsPage } from './pages/AccountsPage'
 import { HistoryPage } from './pages/HistoryPage'
 import { SettingsPage } from './pages/SettingsPage'
+import { AuthPage } from './pages/AuthPage'
+import { BettingPage } from './pages/BettingPage'
+import { ProfilesPage } from './pages/ProfilesPage'
+import { CoversPage } from './pages/CoversPage'
+import { ScannerPage } from './pages/ScannerPage'
+import { StatusBar } from './components/StatusBar'
 import { useScanner } from './hooks/useScanner'
 import type { TabType } from './types'
 
@@ -47,6 +53,8 @@ function App() {
     switch(activeTab) {
       case 'dashboard':
         return <Dashboard metrics={metrics} surebets={surebets} bookmakers={bookmakers} valueBets={valueBets} generosityIndices={generosityIndices} executionOverview={executionOverview} parserCoverage={parserCoverage} parserHealth={parserHealth} />
+      case 'scanner':
+        return <ScannerPage surebets={surebets} isScanning={scannerStatus?.running ?? metrics !== null} />
       case 'surebets':
         return <SurebetsPage surebets={surebets} />
       case 'corridors':
@@ -61,6 +69,14 @@ function App() {
         return <HistoryPage surebets={surebets} corridors={corridors} expressForks={expressForks} valueBets={valueBets} executionLedger={executionLedger} />
       case 'settings':
         return <SettingsPage />
+      case 'auth':
+        return <AuthPage />
+      case 'betting':
+        return <BettingPage />
+      case 'profiles':
+        return <ProfilesPage />
+      case 'covers':
+        return <CoversPage />
       default:
         return <Dashboard metrics={metrics} surebets={surebets} bookmakers={bookmakers} valueBets={valueBets} generosityIndices={generosityIndices} executionOverview={executionOverview} parserCoverage={parserCoverage} parserHealth={parserHealth} />
     }
@@ -77,22 +93,30 @@ function App() {
         scannerRunning={scannerStatus?.running ?? metrics !== null}
       />
 
-      <main className="flex-1 overflow-auto">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeTab}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.2 }}
-            className="h-full overflow-auto"
-          >
-            <div className="p-6 max-w-[1920px] mx-auto">
-              {renderPage()}
-            </div>
-          </motion.div>
-        </AnimatePresence>
-      </main>
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <main className="flex-1 overflow-auto">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeTab}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+              className="h-full overflow-auto"
+            >
+              <div className="p-6 max-w-[1920px] mx-auto">
+                {renderPage()}
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        </main>
+        <StatusBar
+          wsConnected={connected}
+          scannerRunning={scannerStatus?.running ?? metrics !== null}
+          forkCount={surebets.length}
+          parserCount={7}
+        />
+      </div>
     </div>
   )
 }

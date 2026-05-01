@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion'
 import { 
   LayoutDashboard, Zap, GitBranch, Layers, History, Settings, Radar, Landmark,
-  ChevronLeft, ChevronRight, Circle 
+  ChevronLeft, ChevronRight, Circle, Shield, Target, User, Umbrella
 } from 'lucide-react'
 import type { TabType } from '../types'
 
@@ -16,11 +16,16 @@ interface SidebarProps {
 
 const tabs: { id: TabType; label: string; shortcut: string; icon: any; badge?: { text: string; color: string } }[] = [
   { id: 'dashboard', label: 'Обзор', shortcut: '⌘1', icon: LayoutDashboard },
-  { id: 'surebets', label: 'Вилки', shortcut: '⌘2', icon: Zap, badge: { text: 'LIVE', color: 'success' } },
+  { id: 'scanner', label: 'Сканер', shortcut: '', icon: Radar, badge: { text: 'LIVE', color: 'success' } },
+  { id: 'surebets', label: 'Вилки', shortcut: '⌘2', icon: Zap },
   { id: 'corridors', label: 'Коридоры', shortcut: '⌘3', icon: GitBranch },
   { id: 'express', label: 'Экспрессы', shortcut: '⌘4', icon: Layers },
   { id: 'operator', label: 'Execution', shortcut: '⌘5', icon: Radar },
   { id: 'accounts', label: 'Accounts', shortcut: '⌘6', icon: Landmark },
+  { id: 'auth', label: 'Авторизация', shortcut: '', icon: Shield },
+  { id: 'betting', label: 'Ставки', shortcut: '', icon: Target },
+  { id: 'profiles', label: 'Профили', shortcut: '', icon: User },
+  { id: 'covers', label: 'Перекрытия', shortcut: '', icon: Umbrella },
   { id: 'history', label: 'История', shortcut: '⌘7', icon: History },
   { id: 'settings', label: 'Настройки', shortcut: '⌘8', icon: Settings },
 ]

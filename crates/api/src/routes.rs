@@ -177,6 +177,54 @@ pub fn create_router(state: AppState) -> Router {
         .route("/api/v2/execution/execute-leg", post(autobet_execute_leg))
         .route("/api/v2/execution/panic", post(post_execution_panic_v2))
         .route("/api/v2/health/ghost", get(get_ghost_health_v2))
+        // Auth module routes
+        .route("/api/v2/auth/accounts", get(get_auth_accounts))
+        .route("/api/v2/auth/accounts", post(add_auth_account))
+        .route("/api/v2/auth/accounts/:id", get(get_auth_account_detail))
+        .route("/api/v2/auth/accounts/:id/auth", post(auth_account_login))
+        .route("/api/v2/auth/accounts/:id/logout", post(auth_account_logout))
+        .route(
+            "/api/v2/auth/batch-auth",
+            post(auth_batch_login),
+        )
+        .route(
+            "/api/v2/auth/captcha-response",
+            post(auth_captcha_response),
+        )
+        .route(
+            "/api/v2/auth/2fa-response",
+            post(auth_2fa_response),
+        )
+        // Profile routes
+        .route("/api/v2/profiles", get(get_profiles))
+        .route("/api/v2/profiles", post(create_profile))
+        .route("/api/v2/profiles/:id", get(get_profile_detail))
+        .route("/api/v2/profiles/:id/activate", post(activate_profile))
+        .route("/api/v2/profiles/:id/clone", post(clone_profile))
+        .route("/api/v2/profiles/:id", post(update_profile))
+        // Betting execution routes
+        .route("/api/v2/betting/pending", get(get_pending_bets))
+        .route(
+            "/api/v2/betting/pending/:id/confirm",
+            post(confirm_pending_bet),
+        )
+        .route(
+            "/api/v2/betting/pending/:id/cancel",
+            post(cancel_pending_bet),
+        )
+        .route(
+            "/api/v2/betting/pending/:id/edit-stake",
+            post(edit_pending_bet_stake),
+        )
+        // Corridor routes
+        .route("/api/v2/corridors/search", get(search_corridors_v2))
+        // Cover routes
+        .route("/api/v2/cover/search", post(search_cover))
+        // Bookmaker config routes
+        .route(
+            "/api/v2/bookmakers/configs",
+            get(get_bookmaker_configs),
+        )
         .route("/ws", get(ws_handler))
         .route("/ws/v1/surebets", get(ws_surebets_v1_handler))
         .route("/api", any(api_not_found))
